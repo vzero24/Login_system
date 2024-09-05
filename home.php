@@ -56,13 +56,26 @@ if ($result->num_rows > 0) {
 
     <div class="profile">
       <?php
-      // Display user's profile image or default image if none is set
+
+
+      // Check if the image field is not empty
       if (empty($fetch['image'])) {
+        // If no image is set, display the default image
         echo '<img src="images/default.jpg" alt="Default Profile Image">';
       } else {
-        echo '<img src="uploaded_img/' . htmlspecialchars($fetch['image'], ENT_QUOTES, 'UTF-8') . '" alt="Profile Image">';
+        // Construct the image path
+        $imagePath = 'uploaded_img/' . htmlspecialchars($fetch['image'], ENT_QUOTES, 'UTF-8');
+
+        // Check if the file actually exists on the server before displaying
+        if (file_exists($imagePath)) {
+          echo '<img src="' . $imagePath . '" alt="Profile Image">';
+        } else {
+          echo '<p>Image file does not exist: ' . $imagePath . '</p>';
+          echo '<img src="images/default.jpg" alt="Default Profile Image">';
+        }
       }
       ?>
+
       <!-- Display user's name -->
       <h3><?php echo htmlspecialchars($fetch['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
 
@@ -76,6 +89,11 @@ if ($result->num_rows > 0) {
     </div>
 
   </div>
+
+  <!-- For debugging: Display image path in the browser console -->
+  <script>
+    console.log("Image path: '<?php echo $imagePath; ?>'");
+  </script>
 </body>
 
 </html>

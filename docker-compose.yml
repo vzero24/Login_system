@@ -1,11 +1,22 @@
-version: '3.8'
+version: '4.34'
 
 services:
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8081:80"  # Access phpMyAdmin via http://localhost:8081
+    environment:
+      PMA_HOST: db  # MySQL service name for phpMyAdmin
+    depends_on:
+      - db
+    networks:
+      - default
+
   web:
     build: .
     container_name: php-apache
     ports:
-      - "8080:80"  # Expose port 8080 on the host to port 80 on the container
+      - "8080:80"  # Access web app via http://localhost:8080
     volumes:
       - .:/var/www/html  # Mount the current directory to the container's web root
     depends_on:
@@ -18,7 +29,7 @@ services:
     container_name: mysql-database
     environment:
       MYSQL_ROOT_PASSWORD: root_password  # Root user password
-      MYSQL_DATABASE: user_db        # Database name
+      MYSQL_DATABASE: user_db             # Database name
     volumes:
       - db_data:/var/lib/mysql  # Persist MySQL data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql  # Mount init.sql for automatic execution
